@@ -34,7 +34,7 @@ public class ItemRepository {
         }
     }
 
-    public List<Item> getItemByUserId() {
+    public List<Item> getAllItems() {
         return new ArrayList<>(items.values());
     }
 

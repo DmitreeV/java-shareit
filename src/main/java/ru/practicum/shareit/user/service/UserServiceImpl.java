@@ -65,7 +65,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUser(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@") ||
+        user.getName().isBlank()) {
             throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @.");
         }
     }

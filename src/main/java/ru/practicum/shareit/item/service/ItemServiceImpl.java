@@ -62,7 +62,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemByUserId(int userId) {
         log.info("Получен список всех вещей пользователя.");
-        return itemRepository.getItemByUserId().stream()
+        return itemRepository.getAllItems().stream()
                 .filter(item -> item.getOwner().getId() == userId)
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -76,13 +76,14 @@ public class ItemServiceImpl implements ItemService {
         String query = text.toLowerCase();
         List<Item> items = itemRepository.getItemByText(query);
         if (items.isEmpty()) {
-            throw new NotFoundException("Вещь не найдена.");
+            return new ArrayList<>();
         }
         return toItemsDto(items);
     }
 
     private void validateItem(Item item) {
-        if (item.getAvailable() == null || item.getName().isBlank() || item.getDescription() == null) {
+        if (item.getAvailable() == null || item.getName().isBlank() || item.getDescription() == null ||
+        item.getDescription().isBlank() || item.getName() == null) {
             throw new ValidationException("Неверные данные.");
         }
     }

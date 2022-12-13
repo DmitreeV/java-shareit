@@ -8,9 +8,9 @@ import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.CommentMapper;
-import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -19,10 +19,10 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.item.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.item.ItemMapper.*;
 
 @Service
@@ -80,15 +80,20 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemByUserId(Long userId) {
-        log.info("Получен список всех вещей пользователя.");
-        return itemRepository.findAllByOwnerId(userId).stream()
-                .map(ItemMapper::toItemDto)
-                .peek(this::populateItemDto)
+
+        List<Item> items = itemRepository.findAllByOwnerId(userId).stream()
+                .sorted(Comparator.comparing(Item::getId))
                 .collect(Collectors.toList());
+
+        List<ItemDto> itemsDto = this.setBookings(items);
+        this.setComments(itemsDto);
+        log.info("Получен список всех вещей пользователя.");
+        return itemsDto;
     }
 
     @Override
     public List<ItemDto> getItemByText(String text) {
+
         if (text.isBlank()) {
             return new ArrayList<>();
         }
@@ -135,9 +140,33 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private BookingShortDto getLastBooking(Long itemId) {
-        return bookingRepository.findFirstByItemIdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now())
+        return bookingRepository.findFirstByItemIdAndStartBeforeOrderByStartDesc(itemId, LocalDateTime.now())
                 .map(BookingMapper::toBookingShortDto)
                 .orElse(null);
     }
 
+    private void setComments(List<ItemDto> items) {
+        Map<Long, ItemDto> itemsDto = new HashMap<>();
+        items.forEach(item -> itemsDto.put(item.getId(), item));
+
+        Set<Comment> comments = new HashSet<>(commentRepository.findCommentsByItemId(itemsDto.keySet()));
+
+        if (!itemsDto.isEmpty()) {
+            comments.forEach(comment -> Optional.ofNullable(itemsDto.get(comment.getItem().getId()))
+                    .ifPresent(i -> i.getComments().add(toCommentDto(comment))));
+        }
+    }
+
+    private List<ItemDto> setBookings(List<Item> items) {
+        List<ItemDto> itemsDto = toItemsDto(items);
+
+        if (!itemsDto.isEmpty()) {
+            itemsDto.forEach(item -> {
+                item.setNextBooking(getNextBooking(item.getId()));
+                item.setLastBooking(getLastBooking(item.getId()));
+
+            });
+        }
+        return itemsDto;
+    }
 }

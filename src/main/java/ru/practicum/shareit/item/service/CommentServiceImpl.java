@@ -40,10 +40,7 @@ public class CommentServiceImpl implements CommentService {
             throw new BadRequestException("Невозможно добавить комментарий.");
         }
 
-        Comment comment = toComment(commentDto);
-        comment.setAuthor(user);
-        comment.setItem(item);
-        comment.setCreated(LocalDateTime.now());
+        Comment comment = toComment(commentDto, user, item);
         log.info("Комментарий добавлен.");
         return toCommentDto(commentRepository.save(comment));
     }

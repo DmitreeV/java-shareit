@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto updateBooking(Long userId, Long bookingId, Boolean approved) {
         Booking booking = getBooking(bookingId);
 
-        if (!booking.getItem().getOwner().getId().equals(userId)) {
+        if (!booking.getItem().getOwner().getId().equals(userId) && booking.getStart().isAfter(LocalDateTime.now())) {
             throw new NotFoundException("Невозможно изменить бронирование.");
         }
         if (!booking.getStatus().equals(WAITING)) {

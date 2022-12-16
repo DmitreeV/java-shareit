@@ -6,6 +6,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommentMapper {
 
@@ -26,5 +28,11 @@ public class CommentMapper {
                 .item(item)
                 .created(LocalDateTime.now())
                 .build();
+    }
+
+    public static List<CommentDto> toCommentsDto(List<Comment> comments) {
+        return comments.stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
     }
 }

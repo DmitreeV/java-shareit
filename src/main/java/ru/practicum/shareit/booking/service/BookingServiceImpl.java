@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,9 +45,17 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new BadRequestException("Вещь уже забронирована!");
         }
+
         validationData(bookingDto.getStart(), bookingDto.getEnd());
 
         Booking booking = toBooking(bookingDto, user, item);
+
+        List<Booking> bookings = bookingRepository.findBookingsByItem(item);
+        for (Booking b : bookings) {
+            if (booking.getStart().isBefore(b.getEnd())) {
+                throw new BadRequestException("Вещь уже забронирована!");
+            }
+        }
 
         booking.setStatus(WAITING);
         log.info("Бронирование добавлено.");
@@ -59,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto updateBooking(Long userId, Long bookingId, Boolean approved) {
         Booking booking = getBooking(bookingId);
 
-        if (!booking.getItem().getOwner().getId().equals(userId) && booking.getStart().isAfter(LocalDateTime.now())) {
+        if (!booking.getItem().getOwner().getId().equals(userId) || booking.getStart().isBefore(LocalDateTime.now())) {
             throw new NotFoundException("Невозможно изменить бронирование.");
         }
         if (!booking.getStatus().equals(WAITING)) {

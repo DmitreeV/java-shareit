@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.error.exception.NotFoundException;
-import ru.practicum.shareit.item.CommentMapper;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.CommentMapper.toCommentDto;
+import static ru.practicum.shareit.item.CommentMapper.toCommentsDto;
 import static ru.practicum.shareit.item.ItemMapper.*;
 
 @Service
@@ -125,9 +126,9 @@ public class ItemServiceImpl implements ItemService {
     private void populateItemDto(ItemDto itemDto) {
         BookingShortDto lastBooking = getLastBooking(itemDto.getId());
         BookingShortDto nextBooking = getNextBooking(itemDto.getId());
-        List<CommentDto> comments = commentRepository.findAllByItemId(itemDto.getId()).stream()
-                .map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList());
+
+        List<CommentDto> comments = toCommentsDto(commentRepository.findAllByItemId(itemDto.getId()));
+
         itemDto.setLastBooking(lastBooking);
         itemDto.setNextBooking(nextBooking);
         itemDto.setComments(comments);
@@ -160,11 +161,27 @@ public class ItemServiceImpl implements ItemService {
     private List<ItemDto> setBookings(List<Item> items) {
         List<ItemDto> itemsDto = toItemsDto(items);
 
+        Set<Booking> bookings = new HashSet<>(bookingRepository.findAll());
+
         if (!itemsDto.isEmpty()) {
             itemsDto.forEach(item -> {
-                item.setNextBooking(getNextBooking(item.getId()));
-                item.setLastBooking(getLastBooking(item.getId()));
 
+                Optional<Booking> nextBooking = bookings.stream()
+                        .filter(booking -> booking.getItem().getId().equals(item.getId()))
+                        .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                        .min(Comparator.comparing(Booking::getStart));
+
+                Optional<Booking> lastBooking = bookings.stream()
+                        .filter(booking -> booking.getItem().getId().equals(item.getId()))
+                        .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                        .max(Comparator.comparing(Booking::getEnd));
+
+                item.setNextBooking(nextBooking
+                        .map(BookingMapper::toBookingShortDto)
+                        .orElse(null));
+                item.setLastBooking(lastBooking
+                        .map(BookingMapper::toBookingShortDto)
+                        .orElse(null));
             });
         }
         return itemsDto;

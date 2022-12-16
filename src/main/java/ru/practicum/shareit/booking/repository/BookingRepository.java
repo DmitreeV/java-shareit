@@ -43,7 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     //CURRENT
     List<Booking> findBookingsByItem_Owner_IdAndStartIsBeforeAndEndIsAfter(Long bookerId, LocalDateTime now,
-                                                                      LocalDateTime now1, Sort sort);
+                                                                           LocalDateTime now1, Sort sort);
 
     //WAITING
     //REJECTED
@@ -55,5 +55,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(Long userId, Long itemId, Status approved,
                                                                           LocalDateTime now);
+
     List<Booking> findBookingsByItem(Item item);
 }

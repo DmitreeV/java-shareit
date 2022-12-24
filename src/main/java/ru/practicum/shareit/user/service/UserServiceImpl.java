@@ -20,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Override
     public List<UserDto> getAllUsers() {
         log.info("Получен список всех пользователей.");
         return toUsersDto(userRepository.findAll());
     }
 
+    @Override
     public UserDto saveUser(UserDto userDto) {
         User user = toUser(userDto);
         validateUser(user);
@@ -32,6 +34,7 @@ public class UserServiceImpl implements UserService {
         return toUserDto(userRepository.save(user));
     }
 
+    @Override
     public UserDto updateUser(UserDto userDto, Long id) {
         User userToUpdate = getUser(id);
         User user = toUser(userDto);
@@ -62,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateUser(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@") ||
-        user.getName().isBlank()) {
+        user.getName().isBlank() || user.getName() == null) {
             throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @.");
         }
     }

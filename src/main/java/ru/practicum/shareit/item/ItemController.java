@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -8,9 +9,11 @@ import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
+@Validated
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
@@ -19,7 +22,7 @@ public class ItemController {
     private final CommentService commentService;
 
     @PostMapping
-    ItemDto saveItem(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+    ItemDto saveItem(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody @Valid ItemDto itemDto) {
         return itemService.saveItem(itemDto, userId);
     }
 
@@ -35,13 +38,17 @@ public class ItemController {
     }
 
     @GetMapping
-    List<ItemDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItemByUserId(userId);
+    List<ItemDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                  @RequestParam(defaultValue = "0") @Min(0) int from,
+                                  @RequestParam(defaultValue = "20") @Min(1) int size) {
+        return itemService.getItemByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    List<ItemDto> getItemByText(@RequestParam String text) {
-        return itemService.getItemByText(text);
+    List<ItemDto> getItemByText(@RequestParam String text,
+                                @RequestParam(defaultValue = "0") @Min(0) int from,
+                                @RequestParam(defaultValue = "20") @Min(1) int size) {
+        return itemService.getItemByText(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

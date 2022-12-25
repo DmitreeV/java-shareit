@@ -50,7 +50,7 @@ public class ItemRequestServiceImplTest {
     }
 
     @Test
-    void testIntegrationSaveItemRequest() {
+    void testSaveItemRequest() {
         itemRequestService.saveItemRequest(itemRequestDto, 1L);
 
         TypedQuery<ItemRequest> query = em

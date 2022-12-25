@@ -34,6 +34,7 @@ public class ItemServiceImplTest {
     private final UserService userService;
     private final ItemService itemService;
     private final CommentService commentService;
+
     private final UserDto userDto = UserDto
             .builder()
             .id(1L)
@@ -57,17 +58,6 @@ public class ItemServiceImplTest {
 
     @Test
     void testSaveItem() {
-
-        userService.saveUser(userDto);
-        itemService.saveItem(itemDto, 1L);
-
-        assertThat(1L, equalTo(itemDto.getId()));
-        assertThat("Молоток", equalTo(itemDto.getName()));
-        assertThat("молоток забивной", equalTo(itemDto.getDescription()));
-    }
-
-    @Test
-    void testIntegrationSaveItem() {
 
         userService.saveUser(userDto);
         itemService.saveItem(itemDto, 1L);

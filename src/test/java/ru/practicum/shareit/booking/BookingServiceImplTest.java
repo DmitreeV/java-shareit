@@ -77,7 +77,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void testIntegrationSaveBooking() {
+    void testSaveBooking() {
 
         bookingService.saveBooking(bookingRequestDto, 2L);
 

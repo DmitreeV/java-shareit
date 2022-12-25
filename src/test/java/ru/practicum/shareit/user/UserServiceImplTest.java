@@ -28,7 +28,7 @@ public class UserServiceImplTest {
     private final UserService service;
 
     @Test
-    void testIntegrationSaveUser() {
+    void testSaveUser() {
 
         UserDto userDto = new UserDto(1L, "Petr", "petr@yandex.ru");
         service.saveUser(userDto);
@@ -41,17 +41,6 @@ public class UserServiceImplTest {
         assertThat(user.getId(), equalTo(1L));
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
-    }
-
-    @Test
-    void testSaveUser() {
-
-        UserDto userDto = new UserDto(1L, "Petr", "petr@yandex.ru");
-        service.saveUser(userDto);
-
-        assertThat(1L, equalTo(userDto.getId()));
-        assertThat("Petr", equalTo(userDto.getName()));
-        assertThat("petr@yandex.ru", equalTo(userDto.getEmail()));
     }
 
     @Test

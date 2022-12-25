@@ -165,13 +165,40 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void testGetAllByBookerByStateTimePast() {
+    void testGetAllByBookerByStatePast() {
         bookingService.saveBooking(bookingRequestDto, 2L);
 
         List<BookingDto> bookings = bookingService.getAllByBooker(2L, "PAST", 0, 2);
 
         assertThat(bookings.size(), equalTo(1));
         assertThat(bookings.get(0).getId(), equalTo(1L));
+    }
+
+    @Test
+    void testGetAllByBookerByStateRejected() {
+        bookingService.saveBooking(bookingRequestDto, 2L);
+
+        List<BookingDto> bookings = bookingService.getAllByBooker(2L, "REJECTED", 0, 2);
+
+        assertThat(bookings.size(), equalTo(0));
+    }
+
+    @Test
+    void testGetAllByBookerByStateFuture() {
+        bookingService.saveBooking(bookingRequestDto, 2L);
+
+        List<BookingDto> bookings = bookingService.getAllByBooker(2L, "FUTURE", 0, 2);
+
+        assertThat(bookings.size(), equalTo(0));
+    }
+
+    @Test
+    void testGetAllByBookerByStateCurrent() {
+        bookingService.saveBooking(bookingRequestDto, 2L);
+
+        List<BookingDto> bookings = bookingService.getAllByBooker(2L, "CURRENT", 0, 2);
+
+        assertThat(bookings.size(), equalTo(0));
     }
 
     @Test
@@ -211,13 +238,40 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void testGetAllByOwnerByStateTimeFuture() {
+    void testGetAllByOwnerByStatePast() {
         bookingService.saveBooking(bookingRequestDto, 2L);
 
         List<BookingDto> bookings = bookingService.getAllByOwner(1L, "PAST", 0, 2);
 
         assertThat(bookings.size(), equalTo(1));
         assertThat(bookings.get(0).getId(), equalTo(1L));
+    }
+
+    @Test
+    void testGetAllByOwnerByStateRejected() {
+        bookingService.saveBooking(bookingRequestDto, 2L);
+
+        List<BookingDto> bookings = bookingService.getAllByOwner(1L, "REJECTED", 0, 2);
+
+        assertThat(bookings.size(), equalTo(0));
+    }
+
+    @Test
+    void testGetAllByOwnerByStateFuture() {
+        bookingService.saveBooking(bookingRequestDto, 2L);
+
+        List<BookingDto> bookings = bookingService.getAllByOwner(1L, "FUTURE", 0, 2);
+
+        assertThat(bookings.size(), equalTo(0));
+    }
+
+    @Test
+    void testGetAllByOwnerByStateCurrent() {
+        bookingService.saveBooking(bookingRequestDto, 2L);
+
+        List<BookingDto> bookings = bookingService.getAllByOwner(1L, "CURRENT", 0, 2);
+
+        assertThat(bookings.size(), equalTo(0));
     }
 
     @Test

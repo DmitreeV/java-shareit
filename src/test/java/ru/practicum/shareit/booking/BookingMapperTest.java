@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.model.Item;
@@ -17,6 +18,7 @@ public class BookingMapperTest {
 
     private Booking booking;
     private BookingDto bookingDto;
+    private BookingShortDto bookingShortDto;
 
     @BeforeEach
     void before() {
@@ -46,6 +48,7 @@ public class BookingMapperTest {
                 .build();
 
         bookingDto = BookingMapper.toBookingDto(booking);
+        bookingShortDto = BookingMapper.toBookingShortDto(booking);
     }
 
     @Test
@@ -56,5 +59,14 @@ public class BookingMapperTest {
         Assertions.assertEquals(booking.getItem().getId(), bookingDto.getItem().getId());
         Assertions.assertEquals(booking.getBooker().getId(), bookingDto.getBooker().getId());
         Assertions.assertEquals(booking.getStatus(), bookingDto.getStatus());
+    }
+
+    @Test
+    void toBookingShortDto() {
+        Assertions.assertNotNull(booking);
+        Assertions.assertEquals(booking.getStart(), bookingShortDto.getStart());
+        Assertions.assertEquals(booking.getEnd(), bookingShortDto.getEnd());
+        Assertions.assertEquals(booking.getBooker().getId(), bookingShortDto.getBookerId());
+        Assertions.assertEquals(booking.getStatus(), bookingShortDto.getStatus());
     }
 }

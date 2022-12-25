@@ -9,11 +9,14 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+
 @SpringBootTest
 public class CommentMapperTest {
 
     private Comment comment;
     private CommentDto commentDto;
+    private List<CommentDto> commentsDto;
 
     @BeforeEach
     void before() {
@@ -41,6 +44,7 @@ public class CommentMapperTest {
                 .build();
 
         comment = CommentMapper.toComment(commentDto, user, item);
+        commentsDto = CommentMapper.toCommentsDto(List.of(comment));
     }
 
     @Test
@@ -57,5 +61,14 @@ public class CommentMapperTest {
         Assertions.assertEquals(CommentMapper.toCommentDto(comment).getId(), commentDto.getId());
         Assertions.assertEquals(CommentMapper.toCommentDto(comment).getText(), commentDto.getText());
         Assertions.assertEquals(CommentMapper.toCommentDto(comment).getAuthorName(), commentDto.getAuthorName());
+    }
+
+    @Test
+    void toCommentsDto() {
+        Assertions.assertNotNull(commentsDto.get(0));
+
+        Assertions.assertEquals(commentsDto.get(0).getId(), commentDto.getId());
+        Assertions.assertEquals(commentsDto.get(0).getText(), commentDto.getText());
+        Assertions.assertEquals(commentsDto.get(0).getAuthorName(), commentDto.getAuthorName());
     }
 }

@@ -17,11 +17,13 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.validation.ValidationException;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -73,7 +75,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void testSaveItemFail() {
+    void testSaveItemFailWrongUser() {
 
         userService.saveUser(userDto);
         itemService.saveItem(itemDto, 1L);
@@ -81,6 +83,44 @@ public class ItemServiceImplTest {
         NotFoundException e = assertThrows(NotFoundException.class,
                 () -> itemService.saveItem(itemDto, 20L));
         assertThat(e.getMessage(), equalTo("Неверный ID пользователя."));
+    }
+
+    @Test
+    void testSaveItemFailWrongItemRequest() {
+
+        userService.saveUser(userDto);
+        itemService.saveItem(itemDto, 1L);
+        itemDto.setRequestId(20L);
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemService.saveItem(itemDto, 1L));
+        assertThat(e.getMessage(), equalTo("Неверный ID запроса."));
+    }
+
+    @Test
+    void testSaveItemFailWrongDescription() {
+
+        userService.saveUser(userDto);
+        itemService.saveItem(itemDto, 1L);
+        itemDto.setDescription(null);
+
+        ValidationException e = assertThrows(ValidationException.class,
+                () -> itemService.saveItem(itemDto, 1L));
+
+        assertThat(e.getMessage(), equalTo("Неверные данные."));
+    }
+
+    @Test
+    void testSaveItemFailWrongAvailable() {
+
+        userService.saveUser(userDto);
+        itemService.saveItem(itemDto, 1L);
+        itemDto.setAvailable(null);
+
+        ValidationException e = assertThrows(ValidationException.class,
+                () -> itemService.saveItem(itemDto, 1L));
+
+        assertThat(e.getMessage(), equalTo("Неверные данные."));
     }
 
     @Test
@@ -117,6 +157,17 @@ public class ItemServiceImplTest {
         NotFoundException e = assertThrows(NotFoundException.class,
                 () -> itemService.updateItem(50L, itemDto, 1L));
         assertThat(e.getMessage(), equalTo("Неверный ID."));
+    }
+
+    @Test
+    void testGetItemByIdNoBookings() {
+        userService.saveUser(userDto);
+        itemService.saveItem(itemDto, 1L);
+        ItemDto item = itemService.getItemById(1L, 1L);
+
+        assertThat(item.getName(), equalTo("Молоток"));
+        assertThat(item.getLastBooking(), nullValue());
+        assertThat(item.getNextBooking(), nullValue());
     }
 
     @Test

@@ -5,30 +5,42 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 @SpringBootTest
 public class ItemMapperTest {
 
     private Item item;
     private ItemDto itemDto;
+    private ItemShortDto itemShortDto;
 
     @BeforeEach
     void before() {
 
-        itemDto = ItemDto
+        ItemRequest itemRequest = ItemRequest
+                .builder()
+                .id(1L)
+                .description("description")
+                .build();
+
+        item = Item
                 .builder()
                 .id(1L)
                 .name("Дрель")
                 .description("дрель аккамуляторная")
                 .available(true)
+                .request(itemRequest)
                 .build();
 
-        item = ItemMapper.toItem(itemDto);
+        itemDto = ItemMapper.toItemDto(item);
+        itemShortDto = ItemMapper.toItemShortDto(item);
+
     }
 
     @Test
-    void toItem() {
+    void toItemDto() {
         Assertions.assertNotNull(item);
         Assertions.assertEquals(item.getId(), itemDto.getId());
         Assertions.assertEquals(item.getName(), itemDto.getName());
@@ -37,11 +49,11 @@ public class ItemMapperTest {
     }
 
     @Test
-    void toItemDto() {
+    void toItemShortDto() {
         Assertions.assertNotNull(item);
-        Assertions.assertEquals(ItemMapper.toItemDto(item).getId(), itemDto.getId());
-        Assertions.assertEquals(ItemMapper.toItemDto(item).getName(), itemDto.getName());
-        Assertions.assertEquals(ItemMapper.toItemDto(item).getDescription(), itemDto.getDescription());
-        Assertions.assertEquals(ItemMapper.toItemDto(item).getAvailable(), itemDto.getAvailable());
+        Assertions.assertEquals(item.getId(), itemShortDto.getId());
+        Assertions.assertEquals(item.getName(), itemShortDto.getName());
+        Assertions.assertEquals(item.getDescription(), itemShortDto.getDescription());
+        Assertions.assertEquals(item.getAvailable(), itemShortDto.getAvailable());
     }
 }

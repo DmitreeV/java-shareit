@@ -29,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.booking.model.Status.APPROVED;
+import static ru.practicum.shareit.booking.model.Status.WAITING;
 import static ru.practicum.shareit.item.ItemMapper.toItem;
 import static ru.practicum.shareit.user.UserMapper.toUser;
 
@@ -72,18 +73,34 @@ public class BookingControllerTest {
         bookingDto = BookingDto
                 .builder()
                 .id(1L)
-                .start(LocalDateTime.of(2022, 11, 20, 10, 0))
-                .end(LocalDateTime.of(2022, 11, 23, 10, 0))
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(10))
                 .booker(toUser(userDto))
                 .item(toItem(itemDto))
+                .status(WAITING)
                 .build();
 
         bookingRequestDto = BookingRequestDto
                 .builder()
-                .start(LocalDateTime.of(2022, 11, 20, 10, 0))
-                .end(LocalDateTime.of(2022, 11, 23, 10, 0))
-                .itemId(1L)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(10))
+                .itemId(itemDto.getId())
                 .build();
+    }
+
+    @Test
+    void testSaveBookingWithStatus200() throws Exception {
+        when(bookingService.saveBooking(any(), anyLong()))
+                .thenReturn(bookingDto);
+
+        mvc.perform(post("/bookings/")
+                        .content(mapper.writeValueAsString(bookingRequestDto))
+                        .header("X-Sharer-User-Id", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(bookingDto)));
     }
 
     @Test

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -16,8 +17,10 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.item.ItemMapper.toItemsDto;
 import static ru.practicum.shareit.request.ItemRequestMapper.*;
 
 @Service
@@ -53,23 +56,35 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getAllByUserId(Long userId) {
         getUser(userId);
-        List<ItemRequestDto> requests =
-                toItemRequestsDto(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId));
 
-        requests.forEach(this::setItemsToItemRequestDto);
+        List<ItemRequest> req = itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId);
+        List<ItemRequestDto> requests = toItemRequestsDto(req);
+
+        List<Item> items = itemRepository.findAllByRequestIn(req);
+        for (ItemRequestDto itemReg : requests) {
+            List<Item> items1 = items.stream()
+                    .filter(i -> Objects.equals(i.getRequest().getId(), itemReg.getId()))
+                    .collect(Collectors.toList());
+            itemReg.setItems(toItemsDto(items1));
+        }
         log.info("Получен список запросов пользователя.");
         return requests;
     }
 
     @Override
     public List<ItemRequestDto> getAllRequests(Long userId, int from, int size) {
-        User user = getUser(userId);
 
         Pageable page = PageRequest.of(from / size, size);
-        List<ItemRequestDto> requests =
-                toItemRequestsDto(itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(user, page));
+        List<ItemRequest> req = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedAsc(userId, page);
+        List<ItemRequestDto> requests = toItemRequestsDto(req);
 
-        requests.forEach(this::setItemsToItemRequestDto);
+        List<Item> items = itemRepository.findAllByRequestIn(req);
+        for (ItemRequestDto itemReg : requests) {
+            List<Item> items1 = items.stream()
+                    .filter(i -> Objects.equals(i.getRequest().getId(), itemReg.getId()))
+                    .collect(Collectors.toList());
+            itemReg.setItems(toItemsDto(items1));
+        }
         log.info("Получен список всех запросов, созданных другими пользователями.");
         return requests;
     }
@@ -77,7 +92,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private void setItemsToItemRequestDto(ItemRequestDto itemRequestDto) {
         itemRequestDto.setItems(itemRepository.findAllByRequestId(itemRequestDto.getId())
                 .stream()
-                .map(ItemMapper::toItemShortDto)
+                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList()));
     }
 

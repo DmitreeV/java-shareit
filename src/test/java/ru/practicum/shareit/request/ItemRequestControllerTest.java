@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.error.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemShortDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
@@ -44,7 +44,7 @@ public class ItemRequestControllerTest {
     @BeforeEach
     void init() {
 
-        ItemShortDto itemShortDto = ItemShortDto
+        ItemDto itemShortDto = ItemDto
                 .builder()
                 .id(1L)
                 .name("Дрель")

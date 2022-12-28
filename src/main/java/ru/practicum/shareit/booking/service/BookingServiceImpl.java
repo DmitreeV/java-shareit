@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -88,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getAllByBooker(Long userId, String state, int from, int size) {
         getUser(userId);
 
-        Page<Booking> bookings;
+        List<Booking> bookings;
         Pageable page = PageRequest.of(from / size, size, sort);
         switch (state) {
             case "ALL":
@@ -129,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getAllByOwner(Long userId, String state, int from, int size) {
         getUser(userId);
 
-        Page<Booking> bookings;
+        List<Booking> bookings;
         Pageable page = PageRequest.of(from / size, size, sort);
         switch (state) {
             case "ALL":

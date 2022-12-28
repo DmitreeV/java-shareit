@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
@@ -43,7 +42,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static List<BookingDto> toBookingsDto(Page<Booking> bookings) {
+    public static List<BookingDto> toBookingsDto(List<Booking> bookings) {
         return bookings.stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());

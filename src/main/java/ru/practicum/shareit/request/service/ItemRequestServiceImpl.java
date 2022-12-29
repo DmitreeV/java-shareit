@@ -58,15 +58,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         getUser(userId);
 
         List<ItemRequest> req = itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId);
-        List<ItemRequestDto> requests = toItemRequestsDto(req);
 
-        List<Item> items = itemRepository.findAllByRequestIn(req);
-        for (ItemRequestDto itemReg : requests) {
-            List<Item> items1 = items.stream()
-                    .filter(i -> Objects.equals(i.getRequest().getId(), itemReg.getId()))
-                    .collect(Collectors.toList());
-            itemReg.setItems(toItemsDto(items1));
-        }
+        List<ItemRequestDto> requests = toItemRequestsDto(req);
+        setItems(requests, req);
         log.info("Получен список запросов пользователя.");
         return requests;
     }
@@ -76,7 +70,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         Pageable page = PageRequest.of(from / size, size);
         List<ItemRequest> req = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedAsc(userId, page);
+
         List<ItemRequestDto> requests = toItemRequestsDto(req);
+        setItems(requests, req);
+        log.info("Получен список всех запросов, созданных другими пользователями.");
+        return requests;
+    }
+
+    private void setItems(List<ItemRequestDto> requests, List<ItemRequest> req) {
 
         List<Item> items = itemRepository.findAllByRequestIn(req);
         for (ItemRequestDto itemReg : requests) {
@@ -85,8 +86,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     .collect(Collectors.toList());
             itemReg.setItems(toItemsDto(items1));
         }
-        log.info("Получен список всех запросов, созданных другими пользователями.");
-        return requests;
     }
 
     private void setItemsToItemRequestDto(ItemRequestDto itemRequestDto) {

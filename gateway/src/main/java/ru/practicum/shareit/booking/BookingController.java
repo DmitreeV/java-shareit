@@ -50,7 +50,7 @@ public class BookingController {
                                                  @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
         BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("{\"error\"" + ":" + "\"Unknown state: " + stateParam + "\"}"));
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
         return bookingClient.getAllByBooker(userId, state, from, size);
     }
@@ -62,9 +62,8 @@ public class BookingController {
                                          @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
         BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("{\"error\"" + ":" + "\"Unknown state: " + stateParam + "\"}"));
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-
 
         return bookingClient.getAllByOwner(userId, state, from, size);
     }

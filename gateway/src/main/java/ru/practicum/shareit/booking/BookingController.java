@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,8 @@ import ru.practicum.shareit.booking.dto.BookingState;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -66,5 +69,13 @@ public class BookingController {
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
 
         return bookingClient.getAllByOwner(userId, state, from, size);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<Map<String, String>> handleException(IllegalArgumentException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "Unknown state: UNSUPPORTED_STATUS");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

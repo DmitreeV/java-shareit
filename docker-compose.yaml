@@ -20,6 +20,7 @@ services:
     depends_on:
       - db
     environment:
+      - TZ=Europe/Moscow
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit?encoding=utf8
       - SPRING_DATASOURCE_USERNAME=root

@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -173,7 +172,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void validationData(LocalDateTime start, LocalDateTime end) {
         if (!start.isBefore(end)) {
-            throw new ValidationException("Неверные даты");
+            throw new BadRequestException("Неверные даты");
         }
     }
 }

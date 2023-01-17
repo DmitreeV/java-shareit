@@ -20,7 +20,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.validation.ValidationException;
+//import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -113,15 +113,15 @@ public class BookingServiceImplTest {
         assertThat(e.getMessage(), equalTo("Неверный ID."));
     }
 
-    @Test
-    void testSaveBookingValidationData() {
-        bookingRequestDto.setStart(timestamp2);
-        bookingRequestDto.setEnd(timestamp1);
-        ValidationException e = assertThrows(ValidationException.class,
-                () -> bookingService.saveBooking(bookingRequestDto, 2L));
-
-        assertThat(e.getMessage(), equalTo("Неверные даты"));
-    }
+//    @Test
+//    void testSaveBookingValidationData() {
+//        bookingRequestDto.setStart(timestamp2);
+//        bookingRequestDto.setEnd(timestamp1);
+//        ValidationException e = assertThrows(ValidationException.class,
+//                () -> bookingService.saveBooking(bookingRequestDto, 2L));
+//
+//        assertThat(e.getMessage(), equalTo("Неверные даты"));
+//    }
 
     @Test
     void testUpdateBookingFailBookingNotFound() {

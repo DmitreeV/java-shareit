@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -36,21 +35,21 @@ public class ItemController {
 
     @GetMapping
     List<ItemDto> getItemByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                  @RequestParam(defaultValue = "0") @Min(0) int from,
-                                  @RequestParam(defaultValue = "20") @Min(1) int size) {
+                                  @RequestParam(defaultValue = "0") int from,
+                                  @RequestParam(defaultValue = "20") int size) {
         return itemService.getItemByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
     List<ItemDto> getItemByText(@RequestParam String text,
-                                @RequestParam(defaultValue = "0") @Min(0) int from,
-                                @RequestParam(defaultValue = "20") @Min(1) int size) {
+                                @RequestParam(defaultValue = "0") int from,
+                                @RequestParam(defaultValue = "20") int size) {
         return itemService.getItemByText(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto saveComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId,
-                                 @RequestBody CommentDto commentDto) {
+                                  @RequestBody CommentDto commentDto) {
         return commentService.saveComment(itemId, userId, commentDto);
     }
 }

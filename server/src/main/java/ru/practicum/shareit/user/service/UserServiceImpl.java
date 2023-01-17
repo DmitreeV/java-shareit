@@ -8,7 +8,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.validation.ValidationException;
 import java.util.List;
 
 import static ru.practicum.shareit.user.UserMapper.*;
@@ -29,7 +28,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto saveUser(UserDto userDto) {
         User user = toUser(userDto);
-        validateUser(user);
         log.info("Пользователь сохранен.");
         return toUserDto(userRepository.save(user));
     }
@@ -61,12 +59,5 @@ public class UserServiceImpl implements UserService {
     private User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Неверный ID пользователя."));
-    }
-
-    private void validateUser(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@") ||
-                user.getName() == null || user.getName().isBlank()) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @.");
-        }
     }
 }

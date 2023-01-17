@@ -9,8 +9,6 @@ import ru.practicum.shareit.error.exception.BadRequestException;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.error.model.ErrorResponse;
 
-import javax.validation.ValidationException;
-
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -19,13 +17,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final NotFoundException e) {
         log.error("Not Found Exception");
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidate(final ValidationException e) {
-        log.error("Validation Exception");
         return new ErrorResponse(e.getMessage());
     }
 

@@ -23,7 +23,6 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,7 +47,6 @@ public class ItemServiceImpl implements ItemService {
         User savedUser = getUser(userId);
         Item item = toItem(itemDto);
         item.setOwner(savedUser);
-        validateItem(item);
 
         if (itemDto.getRequestId() != null) {
             ItemRequest itemRequest = getItemRequest(itemDto.getRequestId());
@@ -135,13 +133,6 @@ public class ItemServiceImpl implements ItemService {
     private ItemRequest getItemRequest(Long requestId) {
         return itemRequestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException("Неверный ID запроса."));
-    }
-
-    private void validateItem(Item item) {
-        if (item.getAvailable() == null || item.getName().isBlank() || item.getDescription() == null ||
-                item.getDescription().isBlank() || item.getName() == null) {
-            throw new ValidationException("Неверные данные.");
-        }
     }
 
     private void populateItemDto(ItemDto itemDto) {

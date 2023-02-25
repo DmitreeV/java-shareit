@@ -3,7 +3,8 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="https://x-lines.ru/letters/i/cyrillicbasic/1092/0d0d12/34/0/kpwgnhufjf4y.png">
+    <img src="https://x-lines.ru/letters/i/cyrillicscript/1084/000000/46/0/kpwgnhufjf4y.png">
+
   </a>
 
   <p align="center">
